@@ -1,0 +1,399 @@
+
+<template>
+    <lightning-card title=" Event Registration & Check-In" icon-name="standard:campaign">
+
+
+        <template if:true={notification.message}>
+            <div class={notification.cssClass} role="alert">
+                <span class="slds-icon_container slds-m-right_x-small">
+                    <lightning-icon
+                        icon-name={notification.icon}
+                        size="small"
+                        variant={notification.iconVariant}>
+                    </lightning-icon>
+                </span>
+                <span>{notification.message}</span>
+                <button
+                    class="slds-button slds-button_icon slds-button_icon-small slds-float_right"
+                    onclick={clearNotification}
+                    title="Close">
+                    <lightning-icon icon-name="utility:close" size="x-small"></lightning-icon>
+                </button>
+            </div>
+        </template>
+
+        <lightning-tabset active-tab-value={activeTab} onactive={handleTabChange}>
+
+            <lightning-tab label="Register Attendee" value="register" icon-name="utility:user">
+
+                <div class="slds-p-around_medium">
+
+                    <div class="slds-section slds-is-open">
+                        <h3 class="slds-section__title slds-theme_shade slds-p-around_small">
+                            <span class="slds-truncate" title="Step 1">
+                                Step 1 — Select an Event / Campaign
+                            </span>
+                        </h3>
+                        <div class="slds-section__content slds-p-top_small">
+                            <template if:true={isLoadingCampaigns}>
+                                <lightning-spinner
+                                    alternative-text="Loading campaigns..."
+                                    size="small">
+                                </lightning-spinner>
+                            </template>
+
+                            <template if:false={isLoadingCampaigns}>
+                                <lightning-combobox
+                                    name="campaign"
+                                    label="Select Campaign / Event"
+                                    placeholder="-- Choose an Event --"
+                                    value={selectedCampaignId}
+                                    options={campaignOptions}
+                                    required
+                                    onchange={handleCampaignChange}>
+                                </lightning-combobox>
+                            </template>
+
+                            <template if:true={selectedCampaign}>
+                                <div class="campaign-info-card slds-m-top_medium slds-p-around_medium slds-box slds-theme_shade">
+                                    <div class="slds-grid slds-wrap">
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <p class="slds-text-title_caps slds-m-bottom_xx-small">Event</p>
+                                            <p class="slds-text-heading_small">{selectedCampaign.name}</p>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <p class="slds-text-title_caps slds-m-bottom_xx-small">Status</p>
+                                            <lightning-badge label={selectedCampaign.status}></lightning-badge>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2 slds-m-top_small">
+                                            <p class="slds-text-title_caps slds-m-bottom_xx-small">Start Date</p>
+                                            <p>{formattedStartDate}</p>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2 slds-m-top_small">
+                                            <p class="slds-text-title_caps slds-m-bottom_xx-small">End Date</p>
+                                            <p>{formattedEndDate}</p>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-1 slds-m-top_small">
+                                            <p class="slds-text-title_caps slds-m-bottom_xx-small">Registered Attendees</p>
+                                            <p class="slds-text-heading_small">{selectedCampaign.memberCount}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="slds-section slds-is-open slds-m-top_medium">
+                        <h3 class="slds-section__title slds-theme_shade slds-p-around_small">
+                            <span class="slds-truncate" title="Step 2">
+                                Step 2 — Enter Your Details
+                            </span>
+                        </h3>
+                        <div class="slds-section__content slds-p-top_small">
+                            <div class="slds-grid slds-wrap slds-gutters">
+
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning-input
+                                        type="text"
+                                        label="First Name"
+                                        name="firstName"
+                                        value={formData.firstName}
+                                        required
+                                        placeholder="e.g. John"
+                                        onchange={handleFormChange}>
+                                    </lightning-input>
+                                </div>
+
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning-input
+                                        type="text"
+                                        label="Last Name"
+                                        name="lastName"
+                                        value={formData.lastName}
+                                        required
+                                        placeholder="e.g. Smith"
+                                        onchange={handleFormChange}>
+                                    </lightning-input>
+                                </div>
+
+                                <div class="slds-col slds-size_1-of-2 slds-m-top_small">
+                                    <lightning-input
+                                        type="email"
+                                        label="Email Address"
+                                        name="email"
+                                        value={formData.email}
+                                        required
+                                        placeholder="e.g. john@example.com"
+                                        onchange={handleFormChange}>
+                                    </lightning-input>
+                                </div>
+
+                                <div class="slds-col slds-size_1-of-2 slds-m-top_small">
+                                    <lightning-input
+                                        type="tel"
+                                        label="Phone Number"
+                                        name="phone"
+                                        value={formData.phone}
+                                        placeholder="e.g. +91 9876543210"
+                                        onchange={handleFormChange}>
+                                    </lightning-input>
+                                </div>
+
+                                <div class="slds-col slds-size_1-of-1 slds-m-top_small">
+                                    <lightning-input
+                                        type="text"
+                                        label="Job Title"
+                                        name="title"
+                                        value={formData.title}
+                                        placeholder="e.g. Salesforce Developer"
+                                        onchange={handleFormChange}>
+                                    </lightning-input>
+                                </div>
+
+                            </div>
+
+                            <div class="slds-m-top_large slds-text-align_center">
+                                <lightning-button
+                                    variant="brand"
+                                    label="Register & Get QR Code"
+                                    icon-name="utility:email"
+                                    icon-position="left"
+                                    onclick={handleRegister}
+                                    disabled={isRegistering}>
+                                </lightning-button>
+
+                                <template if:true={isRegistering}>
+                                    <lightning-spinner
+                                        alternative-text="Registering..."
+                                        size="small"
+                                        class="slds-m-left_small">
+                                    </lightning-spinner>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <template if:true={showQrCode}>
+                        <div class="qr-code-section slds-m-top_large slds-text-align_center slds-p-around_medium slds-box">
+                            <h2 class="slds-text-heading_medium slds-m-bottom_small">
+                                🎉 Registration Successful!
+                            </h2>
+                            <p class="slds-text-body_regular slds-m-bottom_medium">
+                                A confirmation email has been sent to <strong>{formData.email}</strong>.
+                                Use the QR code below for check-in at the event.
+                            </p>
+                            <div class="qr-container slds-m-bottom_medium">
+                                <img
+                                    src={qrCodeUrl}
+                                    alt="Your Check-In QR Code"
+                                    class="qr-image"
+                                    title="Check-In QR Code" />
+                            </div>
+                            <p class="slds-text-body_small slds-text-color_weak">
+                                Registration ID: {registrationId}
+                            </p>
+                            <div class="slds-m-top_medium">
+                                <lightning-button
+                                    variant="neutral"
+                                    label="Register Another Attendee"
+                                    icon-name="utility:add"
+                                    onclick={handleReset}>
+                                </lightning-button>
+                            </div>
+                        </div>
+                    </template>
+
+                </div>
+            </lightning-tab>
+
+            <lightning-tab label="Event Check-In" value="checkin" icon-name="utility:scan">
+
+                <div class="slds-p-around_medium">
+
+                    <div class="slds-text-align_center slds-m-bottom_medium">
+                        <lightning-icon icon-name="utility:scan" size="large"></lightning-icon>
+                        <h2 class="slds-text-heading_medium slds-m-top_small">QR Code Check-In</h2>
+                        <p class="slds-text-body_regular slds-text-color_weak">
+                            Paste or type the QR code data below to check in an attendee.
+                            In production, connect a USB QR scanner that auto-submits via Enter key.
+                        </p>
+                    </div>
+
+                    <div class="slds-m-bottom_medium">
+                        <lightning-input
+                            type="text"
+                            label="QR Code Data (scanned value)"
+                            name="qrInput"
+                            value={qrInputValue}
+                            placeholder="Paste or scan QR code here — e.g. 00Q000...|Campaign Name|2025-03-01"
+                            onchange={handleQrInputChange}
+                            onkeydown={handleQrKeyDown}>
+                        </lightning-input>
+                        <p class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">
+                            💡 Tip: Most USB barcode/QR scanners auto-press Enter after scanning.
+                            The check-in will process automatically.
+                        </p>
+                    </div>
+
+                    <div class="slds-text-align_center slds-m-bottom_large">
+                        <lightning-button
+                            variant="brand"
+                            label="Process Check-In"
+                            icon-name="utility:check"
+                            icon-position="left"
+                            onclick={handleCheckIn}
+                            disabled={isCheckingIn}>
+                        </lightning-button>
+
+                        <template if:true={isCheckingIn}>
+                            <lightning-spinner
+                                alternative-text="Processing check-in..."
+                                size="small">
+                            </lightning-spinner>
+                        </template>
+                    </div>
+
+                    <template if:true={checkInResult}>
+                        <div class={checkInResultCssClass}>
+                            <div class="slds-media slds-media_center">
+                                <div class="slds-media__figure">
+                                    <lightning-icon
+                                        icon-name={checkInResult.icon}
+                                        size="large"
+                                        variant={checkInResult.iconVariant}>
+                                    </lightning-icon>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h3 class="slds-text-heading_medium">{checkInResult.message}</h3>
+                                    <div class="slds-grid slds-wrap slds-m-top_small">
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <p class="slds-text-title_caps">Attendee</p>
+                                            <p class="slds-text-heading_small">{checkInResult.attendeeName}</p>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <p class="slds-text-title_caps">Event</p>
+                                            <p class="slds-text-heading_small">{checkInResult.campaignName}</p>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-1 slds-m-top_small">
+                                            <p class="slds-text-title_caps">Check-In Time</p>
+                                            <p>{checkInResult.checkInTime}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="slds-text-align_center slds-m-top_medium">
+                                <lightning-button
+                                    variant="neutral"
+                                    label="Scan Next Attendee"
+                                    icon-name="utility:refresh"
+                                    onclick={handleClearCheckIn}>
+                                </lightning-button>
+                            </div>
+                        </div>
+                    </template>
+
+                </div>
+            </lightning-tab>
+
+
+            <lightning-tab label="Attendees Dashboard" value="attendees" icon-name="utility:people">
+
+                <div class="slds-p-around_medium">
+
+                    <div class="slds-grid slds-gutters slds-m-bottom_medium">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-combobox
+                                name="dashboardCampaign"
+                                label="Filter by Campaign"
+                                placeholder="-- Select a Campaign --"
+                                value={dashboardCampaignId}
+                                options={campaignOptions}
+                                onchange={handleDashboardCampaignChange}>
+                            </lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-align-content_end">
+                            <lightning-button
+                                variant="neutral"
+                                label="Refresh"
+                                icon-name="utility:refresh"
+                                onclick={handleRefreshAttendees}>
+                            </lightning-button>
+                        </div>
+                    </div>
+
+                    <!-- Stats Row -->
+                    <template if:true={dashboardCampaignId}>
+                        <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_medium">
+
+                            <div class="slds-col slds-size_1-of-3">
+                                <div class="stat-card stat-card_total slds-text-align_center slds-p-around_medium slds-box">
+                                    <p class="slds-text-heading_large">{stats.totalRegistered}</p>
+                                    <p class="slds-text-title_caps slds-m-top_xx-small">Total Registered</p>
+                                </div>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-3">
+                                <div class="stat-card stat-card_checked slds-text-align_center slds-p-around_medium slds-box">
+                                    <p class="slds-text-heading_large">{stats.totalCheckedIn}</p>
+                                    <p class="slds-text-title_caps slds-m-top_xx-small">Checked In</p>
+                                </div>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-3">
+                                <div class="stat-card stat-card_pending slds-text-align_center slds-p-around_medium slds-box">
+                                    <p class="slds-text-heading_large">{stats.pendingCheckIn}</p>
+                                    <p class="slds-text-title_caps slds-m-top_xx-small">Pending Check-In</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </template>
+
+                    <!-- Attendees Data Table -->
+                    <template if:true={isLoadingAttendees}>
+                        <lightning-spinner
+                            alternative-text="Loading attendees..."
+                            size="medium">
+                        </lightning-spinner>
+                    </template>
+
+                    <template if:false={isLoadingAttendees}>
+                        <template if:true={campaignMembers.length}>
+                            <lightning-datatable
+                                key-field="Id"
+                                data={campaignMembers}
+                                columns={columns}
+                                hide-checkbox-column
+                                sorted-by={sortedBy}
+                                sorted-direction={sortedDirection}
+                                onsort={handleSort}>
+                            </lightning-datatable>
+                        </template>
+
+                        <template if:false={campaignMembers.length}>
+                            <template if:true={dashboardCampaignId}>
+                                <div class="slds-illustration slds-illustration_small slds-m-top_large">
+                                    <div class="slds-text-longform slds-text-align_center">
+                                        <p class="slds-text-heading_medium">No attendees yet</p>
+                                        <p class="slds-text-body_regular">
+                                            No one has registered for this campaign yet.
+                                            Share the registration link to get attendees.
+                                        </p>
+                                    </div>
+                                </div>
+                            </template>
+                            <template if:false={dashboardCampaignId}>
+                                <p class="slds-text-align_center slds-text-color_weak slds-m-top_large">
+                                    Select a campaign above to view attendees.
+                                </p>
+                            </template>
+                        </template>
+                    </template>
+
+                </div>
+            </lightning-tab>
+
+        </lightning-tabset>
+    </lightning-card>
+</template>
