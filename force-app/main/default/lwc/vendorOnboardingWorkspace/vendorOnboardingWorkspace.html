@@ -1,0 +1,112 @@
+<template>
+    <lightning-card title="Vendor Onboarding Workspace">
+        <div class="mainContainer">
+
+            <!-- LEFT PANEL -->
+            <div class="leftPanel">
+                <lightning-input
+                    label="Search Account"
+                    onchange={handleSearch}>
+                </lightning-input>
+
+                <lightning-combobox
+                    label="Industry"
+                    value={industry}
+                    options={industryOptions}
+                    onchange={handleIndustry}>
+                </lightning-combobox>
+
+                <lightning-combobox
+                    label="Rating"
+                    value={rating}
+                    options={ratingOptions}
+                    onchange={handleRating}>
+                </lightning-combobox>
+
+                <lightning-button
+                    label="Apply Filters"
+                    variant="brand"
+                    onclick={loadAccounts}>
+                </lightning-button>
+
+            </div>
+
+
+            <!-- CENTER PANEL -->
+            <div class="middlePanel">
+                <template for:each={records} for:item="rec">
+                    <div
+                        key={rec.accountId}
+                        class="tile"
+                        data-id={rec.accountId}
+                        onclick={handleTileClick}>
+                        <h2>{rec.accountName}</h2>
+                        <p>
+                            <b>Industry:</b>
+                            {rec.industry}
+                        </p>
+                        <p>
+                            <b>Contacts:</b>
+                            {rec.totalContacts}
+                        </p>
+                        <p>
+                            <b>Open Tasks:</b>
+                            {rec.openTasks}
+                        </p>
+                        <lightning-badge
+                            label={rec.rating}>
+                        </lightning-badge>
+                    </div>
+                </template>
+
+            </div>
+
+
+            <!-- RIGHT PANEL -->
+            <div class="rightPanel">
+                <template if:true={detailRecord}>
+                    <h1>{detailRecord.accRecord.Name}</h1>
+                    <p>
+                        <b>Industry:</b>
+                        {detailRecord.accRecord.Industry}
+                    </p>
+                    <p>
+                        <b>Phone:</b>
+                        {detailRecord.accRecord.Phone}
+                    </p>
+                    <p>
+                        <b>Website:</b>
+                        {detailRecord.accRecord.Website}
+                    </p>
+                    <hr/>
+                    <h3>Contacts</h3>
+
+                    <template
+                        for:each={detailRecord.contacts}
+                        for:item="con">
+                        <div key={con.Id} class="box">
+                            <p>{con.Name}</p>
+                            <p>{con.Email}</p>
+                        </div>
+                    </template>
+                    <hr/>
+                    <h3>Tasks</h3>
+                    <template
+                        for:each={detailRecord.tasks}
+                        for:item="task">
+                        <div key={task.Id} class="box">
+                            <p>{task.Subject}</p>
+                            <p>{task.Status}</p>
+                        </div>
+                    </template>
+                    <lightning-button
+                        label="Create Follow-up"
+                        variant="success"
+                        onclick={handleCreateTask}>
+                    </lightning-button>
+                </template>
+            </div>
+        </div>
+    </lightning-card>
+
+</template>

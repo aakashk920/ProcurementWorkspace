@@ -1,0 +1,522 @@
+/* ================================================================
+   PROCUREMENT WORKSPACE  –  Component Styles
+   ================================================================ */
+
+/* ── KPI Header Bar ─────────────────────────────────────────────── */
+.kpiBar {
+    display: flex;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #f4f6f9;
+    border-bottom: 1px solid #dde1e8;
+    flex-wrap: wrap;
+}
+
+.kpiCard {
+    flex: 1;
+    min-width: 120px;
+    padding: 12px 16px;
+    background: #ffffff;
+    border-radius: 8px;
+    border-left: 4px solid #0176d3;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.kpiCard.accent-green { border-left-color: #2e844a; }
+.kpiCard.accent-blue  { border-left-color: #1b96ff; }
+.kpiCard.accent-red   { border-left-color: #c23934; }
+
+.kpiValue {
+    font-size: 22px;
+    font-weight: 700;
+    color: #032d60;
+    line-height: 1.2;
+}
+
+.kpiLabel {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #706e6b;
+}
+
+
+/* ── 3-Column Main Layout ────────────────────────────────────────── */
+.mainContainer {
+    display: flex;
+    height: 82vh;
+    overflow: hidden;
+}
+
+
+/* ── Left Filter Panel ──────────────────────────────────────────── */
+.leftPanel {
+    width: 22%;
+    min-width: 210px;
+    padding: 16px 12px;
+    border-right: 1px solid #dde1e8;
+    background: #fafaf9;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.panelTitle {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #706e6b;
+    margin: 8px 0 2px;
+}
+
+.amountRow {
+    display: flex;
+    gap: 6px;
+}
+
+.halfInput {
+    flex: 1;
+}
+
+.sortDirRow {
+    margin-top: 4px;
+}
+
+.filterActions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.fullBtn {
+    width: 100%;
+}
+
+.bulkSection {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid #dde1e8;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+/* ── Middle Tile Panel ──────────────────────────────────────────── */
+.middlePanel {
+    width: 38%;
+    padding: 12px;
+    overflow-y: auto;
+    background: #f8f8f7;
+    position: relative;
+}
+
+.spinnerWrap {
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: #706e6b;
+    font-size: 14px;
+    gap: 12px;
+}
+
+.emptyIcon {
+    opacity: 0.4;
+}
+
+
+/* ── Tile Card ──────────────────────────────────────────────────── */
+.tile {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #dde1e8;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease, transform 0.15s ease, border-color 0.2s;
+}
+
+.tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 14px rgba(0,0,0,0.1);
+    border-color: #0176d3;
+}
+
+.tile-selected {
+    border-color: #0176d3;
+    background: #eaf5fe;
+    box-shadow: 0 0 0 2px #0176d3;
+}
+
+.tile-overdue {
+    border-left: 4px solid #c23934;
+}
+
+.tileCheckbox {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+/* Health badges */
+.healthBadge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-bottom: 6px;
+}
+
+.healthBadge.hot  { background: #fce9e9; color: #c23934; }
+.healthBadge.warm { background: #fff3e0; color: #e06b00; }
+.healthBadge.cold { background: #e0f0ff; color: #0176d3; }
+
+.overdueBadge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: #c23934;
+    color: white;
+    margin-left: 6px;
+    margin-bottom: 6px;
+}
+
+.tileHeader {
+    font-size: 15px;
+    font-weight: 700;
+    color: #032d60;
+    margin-bottom: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tileBody {
+    font-size: 13px;
+    color: #3e3e3c;
+}
+
+.tileBody p {
+    margin: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.tileFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid #eee;
+    font-size: 12px;
+    color: #706e6b;
+}
+
+.probBadge {
+    background: #e8f4e8;
+    color: #2e844a;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+
+/* ── Pagination Bar ─────────────────────────────────────────────── */
+.paginationBar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 12px 0;
+    margin-top: 4px;
+    border-top: 1px solid #dde1e8;
+    background: #f8f8f7;
+    position: sticky;
+    bottom: 0;
+}
+
+.pageInfo {
+    font-size: 13px;
+    color: #3e3e3c;
+    font-weight: 500;
+}
+
+
+/* ── Right Detail Panel ─────────────────────────────────────────── */
+.rightPanel {
+    width: 40%;
+    padding: 16px;
+    border-left: 1px solid #dde1e8;
+    overflow-y: auto;
+    background: #ffffff;
+}
+
+.selectPrompt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #706e6b;
+    font-size: 14px;
+    gap: 14px;
+    opacity: 0.5;
+}
+
+.detailHeader {
+    padding-bottom: 14px;
+    border-bottom: 2px solid #0176d3;
+    margin-bottom: 14px;
+}
+
+.detailTitle {
+    font-size: 20px;
+    font-weight: 700;
+    color: #032d60;
+    margin: 0 0 4px;
+}
+
+.detailSubtitle {
+    font-size: 13px;
+    color: #706e6b;
+    margin: 0;
+}
+
+
+/* ── Stage Stepper ──────────────────────────────────────────────── */
+.stageStepper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 12px 0;
+    padding: 10px;
+    background: #f4f6f9;
+    border-radius: 8px;
+}
+
+.stageStepper > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    flex: 1;
+    min-width: 60px;
+}
+
+.stepDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #d8dde6;
+    border: 2px solid #c9c7c5;
+}
+
+.stepLabel {
+    font-size: 9px;
+    text-align: center;
+    color: #706e6b;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+
+/* ── Metrics Row ────────────────────────────────────────────────── */
+.metricsRow {
+    display: flex;
+    gap: 10px;
+    margin: 14px 0;
+}
+
+.metricCell {
+    flex: 1;
+    padding: 10px;
+    background: #f4f6f9;
+    border-radius: 8px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.metricValue {
+    font-size: 16px;
+    font-weight: 700;
+    color: #032d60;
+}
+
+.metricLabel {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #706e6b;
+}
+
+
+/* ── Inline Stage Edit ──────────────────────────────────────────── */
+.inlineEdit {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 10px;
+    background: #fafaf9;
+    border-radius: 8px;
+    margin-bottom: 14px;
+    border: 1px dashed #c9c7c5;
+}
+
+.inlineEdit lightning-combobox {
+    flex: 1;
+}
+
+
+/* ── Contact Cards ──────────────────────────────────────────────── */
+.contactCard {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    align-items: flex-start;
+}
+
+.contactAvatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0176d3, #032d60);
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.contactInfo { flex: 1; }
+
+.contactName {
+    font-weight: 600;
+    color: #032d60;
+    margin: 0 0 2px;
+    font-size: 13px;
+}
+
+.contactMeta {
+    font-size: 12px;
+    color: #706e6b;
+    margin: 1px 0;
+}
+
+
+/* ── Task Cards ─────────────────────────────────────────────────── */
+.taskForm {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    background: #f4f6f9;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.taskCard {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    align-items: flex-start;
+}
+
+.taskStatus {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    background: #e0f0ff;
+    color: #0176d3;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.taskInfo { flex: 1; }
+
+.taskSubject {
+    font-weight: 600;
+    color: #032d60;
+    margin: 0 0 3px;
+    font-size: 13px;
+}
+
+.taskMeta {
+    font-size: 12px;
+    color: #706e6b;
+    margin: 0;
+}
+
+
+/* ── Note Cards ─────────────────────────────────────────────────── */
+.noteCard {
+    padding: 10px;
+    border: 1px solid #e8e8e8;
+    border-left: 4px solid #f5a623;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 8px;
+}
+
+.noteTitle {
+    font-weight: 600;
+    color: #032d60;
+    margin: 0 0 4px;
+    font-size: 13px;
+}
+
+.noteBody {
+    font-size: 13px;
+    color: #3e3e3c;
+    margin: 0 0 6px;
+    white-space: pre-wrap;
+}
+
+.noteMeta {
+    font-size: 11px;
+    color: #706e6b;
+    margin: 0;
+}
+
+.emptyTab {
+    color: #706e6b;
+    font-size: 13px;
+    font-style: italic;
+    padding: 12px 0;
+}

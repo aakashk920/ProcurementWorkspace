@@ -1,0 +1,47 @@
+
+.mainContainer {
+    display: flex;
+    height: 80vh;
+}
+
+.leftPanel {
+    width: 20%;
+    padding: 12px;
+    background: #fafaf9;
+    border-right: 1px solid #d8dde6;
+}
+
+.middlePanel {
+    width: 40%;
+    padding: 12px;
+    overflow-y: auto;
+}
+
+.rightPanel {
+    width: 40%;
+    padding: 12px;
+    overflow-y: auto;
+    border-left: 1px solid #d8dde6;
+}
+
+.tile {
+    border: 1px solid #d8dde6;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    background: white;
+    transition: 0.3s;
+}
+
+.tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.box {
+    border: 1px solid #d8dde6;
+    padding: 8px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}

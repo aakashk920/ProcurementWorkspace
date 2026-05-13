@@ -1,0 +1,431 @@
+<template>
+    <lightning-card>
+
+        <div class="kpiBar" if:true={stats}>
+            <div class="kpiCard">
+                <span class="kpiValue">{stats.totalOpps}</span>
+                <span class="kpiLabel">Total Opportunities</span>
+            </div>
+            <div class="kpiCard accent-green">
+                <span class="kpiValue">{formattedPipeline}</span>
+                <span class="kpiLabel">Pipeline Value</span>
+            </div>
+            <div class="kpiCard accent-blue">
+                <span class="kpiValue">{formattedAvgDeal}</span>
+                <span class="kpiLabel">Avg Deal Size</span>
+            </div>
+            <div class="kpiCard accent-red">
+                <span class="kpiValue">{stats.overdueCount}</span>
+                <span class="kpiLabel">Overdue</span>
+            </div>
+        </div>
+
+        <div class="mainContainer">
+            <div class="leftPanel">
+
+                <p class="panelTitle">Filters</p>
+
+                <lightning-input
+                    label="Search Opportunity"
+                    placeholder="Type to search..."
+                    value={searchKeyword}
+                    onchange={handleSearch}>
+                </lightning-input>
+                <lightning-combobox
+                    label="Stage"
+                    value={selectedStage}
+                    options={stageOptions}
+                    placeholder="— All Stages —"
+                    onchange={handleStageChange}>
+                </lightning-combobox>
+
+                <div class="amountRow">
+                    <lightning-input
+                        type="number"
+                        label="Min Amount ($)"
+                        value={minAmount}
+                        formatter="decimal"
+                        onchange={handleMinAmount}
+                        class="halfInput">
+                    </lightning-input>
+                    <lightning-input
+                        type="number"
+                        label="Max Amount ($)"
+                        value={maxAmount}
+                        formatter="decimal"
+                        onchange={handleMaxAmount}
+                        class="halfInput">
+                    </lightning-input>
+                </div>
+                <lightning-combobox
+                    label="Sort By"
+                    value={sortField}
+                    options={sortOptions}
+                    onchange={handleSortChange}>
+                </lightning-combobox>
+
+                <div class="sortDirRow">
+                    <lightning-button-group>
+                        <lightning-button
+                            label="ASC"
+                            variant={ascVariant}
+                            onclick={setSortAsc}>
+                        </lightning-button>
+                        <lightning-button
+                            label="DESC"
+                            variant={descVariant}
+                            onclick={setSortDesc}>
+                        </lightning-button>
+                    </lightning-button-group>
+                </div>
+
+                <div class="filterActions">
+                    <lightning-button
+                        label="Apply Filters"
+                        variant="brand"
+                        onclick={applyFilters}
+                        class="fullBtn">
+                    </lightning-button>
+                    <lightning-button
+                        label="Clear Filters"
+                        variant="neutral"
+                        onclick={clearFilters}
+                        class="fullBtn">
+                    </lightning-button>
+                </div>
+                <div class="bulkSection" if:true={hasBulkSelection}>
+                    <p class="panelTitle">{bulkSelectionLabel}</p>
+                    <lightning-combobox
+                        label="Move to Stage"
+                        value={bulkTargetStage}
+                        options={stageOptions}
+                        onchange={handleBulkStageChange}>
+                    </lightning-combobox>
+                    <lightning-button
+                        label="Bulk Update Stage"
+                        variant="brand"
+                        icon-name="utility:multi_select_checkbox"
+                        onclick={handleBulkUpdate}
+                        class="fullBtn">
+                    </lightning-button>
+                    <lightning-button
+                        label="Clear Selection"
+                        variant="destructive-text"
+                        onclick={clearBulkSelection}
+                        class="fullBtn">
+                    </lightning-button>
+                </div>
+
+            </div>
+
+            <div class="middlePanel">
+
+                <!-- Spinner -->
+                <template if:true={isLoading}>
+                    <div class="spinnerWrap">
+                        <lightning-spinner
+                            alternative-text="Loading opportunities"
+                            size="medium">
+                        </lightning-spinner>
+                    </div>
+                </template>
+
+                <!-- Empty state -->
+                <template if:true={isEmpty}>
+                    <div class="emptyState">
+                        <lightning-icon
+                            icon-name="utility:search"
+                            size="large"
+                            class="emptyIcon">
+                        </lightning-icon>
+                        <p>No opportunities match your filters.</p>
+                    </div>
+                </template>
+
+                <!-- Opportunity tiles -->
+                <template for:each={records} for:item="rec">
+                    <div
+                        key={rec.oppId}
+                        class={rec.tileClass}
+                        data-id={rec.oppId}
+                        data-selected={rec.isSelected}
+                        onclick={handleTileClick}>
+
+                        <!-- Checkbox for bulk select -->
+                        <div
+                            class="tileCheckbox"
+                            data-id={rec.oppId}
+                            onclick={handleCheckboxClick}>
+                            <lightning-input
+                                type="checkbox"
+                                checked={rec.isSelected}
+                                data-id={rec.oppId}
+                                label=""
+                                onclick={handleCheckboxClick}>
+                            </lightning-input>
+                        </div>
+
+                        <!-- Health badge -->
+                        <div class={rec.healthClass}>
+                            {rec.healthLabel}
+                        </div>
+
+                        <!-- Overdue badge -->
+                        <template if:true={rec.isOverdue}>
+                            <div class="overdueBadge">Overdue</div>
+                        </template>
+
+                        <div class="tileHeader">{rec.oppName}</div>
+
+                        <div class="tileBody">
+                            <p>
+                                <lightning-icon icon-name="standard:account" size="xx-small"></lightning-icon>
+                                &nbsp;{rec.accountName}
+                            </p>
+                            <p>
+                                <lightning-icon icon-name="utility:stages" size="xx-small"></lightning-icon>
+                                &nbsp;{rec.stageName}
+                            </p>
+                            <p>
+                                <lightning-icon icon-name="utility:money" size="xx-small"></lightning-icon>
+                                &nbsp;{rec.formattedAmount}
+                            </p>
+                            <p>
+                                <lightning-icon icon-name="standard:user" size="xx-small"></lightning-icon>
+                                &nbsp;{rec.ownerName}
+                            </p>
+                        </div>
+
+                        <div class="tileFooter">
+                            <span class="closeDate">
+                                Close: {rec.formattedCloseDate}
+                            </span>
+                            <span class="probBadge">
+                                {rec.probability}%
+                            </span>
+                        </div>
+
+                    </div>
+                </template>
+
+                <!-- Pagination controls -->
+                <div class="paginationBar" if:true={showPagination}>
+                    <lightning-button
+                        label="Prev"
+                        icon-name="utility:chevronleft"
+                        onclick={goToPrevPage}
+                        disabled={isFirstPage}>
+                    </lightning-button>
+
+                    <span class="pageInfo">
+                        Page {pageNumber} of {totalPages}
+                        &nbsp;|&nbsp; {totalRecords} records
+                    </span>
+
+                    <lightning-button
+                        label="Next"
+                        icon-name="utility:chevronright"
+                        icon-position="right"
+                        onclick={goToNextPage}
+                        disabled={isLastPage}>
+                    </lightning-button>
+                </div>
+
+            </div>
+
+
+            <div class="rightPanel">
+
+                <template if:false={detailRecord}>
+                    <div class="selectPrompt">
+                        <lightning-icon
+                            icon-name="utility:touch_action"
+                            size="large">
+                        </lightning-icon>
+                        <p>Select an opportunity to view details</p>
+                    </div>
+                </template>
+
+                <template if:true={detailRecord}>
+                    <div class="detailHeader">
+                        <h2 class="detailTitle">
+                            {detailRecord.opportunityRecord.Name}
+                        </h2>
+                        <p class="detailSubtitle">
+                            {detailRecord.opportunityRecord.Account.Name}
+                            &nbsp;·&nbsp;
+                            {detailRecord.opportunityRecord.Owner.Name}
+                        </p>
+                    </div>
+
+                    <!-- Stage Progress Stepper -->
+                    <div class="stageStepper" if:true={detailRecord.stageProgress}>
+                        <template
+                            for:each={detailRecord.stageProgress.allStages}
+                            for:item="stg"
+                            for:index="idx">
+                            <div
+                                key={stg}
+                                class={stg.stepClass}
+                                title={stg}>
+                                <div class="stepDot"></div>
+                                <span class="stepLabel">{stg}</span>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Key metrics row -->
+                    <div class="metricsRow">
+                        <div class="metricCell">
+                            <span class="metricValue">
+                                {formattedDetailAmount}
+                            </span>
+                            <span class="metricLabel">Amount</span>
+                        </div>
+                        <div class="metricCell">
+                            <span class="metricValue">
+                                {detailRecord.opportunityRecord.Probability}%
+                            </span>
+                            <span class="metricLabel">Win Probability</span>
+                        </div>
+                        <div class="metricCell">
+                            <span class="metricValue">
+                                {detailRecord.opportunityRecord.StageName}
+                            </span>
+                            <span class="metricLabel">Stage</span>
+                        </div>
+                    </div>
+
+                    <!-- Inline Stage Edit -->
+                    <div class="inlineEdit">
+                        <lightning-combobox
+                            label="Update Stage"
+                            value={inlineStage}
+                            options={stageOptions}
+                            onchange={handleInlineStageChange}>
+                        </lightning-combobox>
+                        <lightning-button
+                            label="Save Stage"
+                            variant="brand"
+                            size="small"
+                            onclick={handleSaveStage}>
+                        </lightning-button>
+                    </div>
+
+                    <!-- Tabs: Contacts | Activities | Notes -->
+                    <lightning-tabset>
+
+                        <!-- CONTACTS TAB -->
+                        <lightning-tab
+                            label="Contacts"
+                            value="contacts"
+                            icon-name="standard:contact">
+                            <template if:true={detailRecord.contacts.length}>
+                                <template
+                                    for:each={detailRecord.contacts}
+                                    for:item="con">
+                                    <div key={con.Id} class="contactCard">
+                                        <div class="contactAvatar">
+                                            {con.initials}
+                                        </div>
+                                        <div class="contactInfo">
+                                            <p class="contactName">{con.Name}</p>
+                                            <p class="contactMeta">{con.Title}</p>
+                                            <p class="contactMeta">{con.Email}</p>
+                                            <p class="contactMeta">{con.Phone}</p>
+                                        </div>
+                                    </div>
+                                </template>
+                            </template>
+                            <template if:false={detailRecord.contacts.length}>
+                                <p class="emptyTab">No contacts found.</p>
+                            </template>
+                        </lightning-tab>
+
+                        <!-- ACTIVITIES TAB -->
+                        <lightning-tab
+                            label="Activities"
+                            value="activities"
+                            icon-name="standard:task">
+
+                            <!-- Create Task inline form -->
+                            <div class="taskForm">
+                                <lightning-input
+                                    label="Task Subject"
+                                    value={newTaskSubject}
+                                    placeholder="e.g. Follow-up call"
+                                    onchange={handleTaskSubjectChange}>
+                                </lightning-input>
+                                <lightning-input
+                                    type="date"
+                                    label="Due Date"
+                                    value={newTaskDueDate}
+                                    onchange={handleTaskDueDateChange}>
+                                </lightning-input>
+                                <lightning-button
+                                    label="Create Task"
+                                    variant="success"
+                                    icon-name="utility:add"
+                                    onclick={handleCreateTask}
+                                    disabled={isCreatingTask}>
+                                </lightning-button>
+                            </div>
+
+                            <template if:true={detailRecord.activities.length}>
+                                <template
+                                    for:each={detailRecord.activities}
+                                    for:item="task">
+                                    <div key={task.Id} class="taskCard">
+                                        <div class={task.statusClass}>
+                                            {task.Status}
+                                        </div>
+                                        <div class="taskInfo">
+                                            <p class="taskSubject">{task.Subject}</p>
+                                            <p class="taskMeta">
+                                                Priority: {task.Priority}
+                                                &nbsp;·&nbsp;
+                                                Due: {task.ActivityDate}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </template>
+                            </template>
+                            <template if:false={detailRecord.activities.length}>
+                                <p class="emptyTab">No activities found.</p>
+                            </template>
+                        </lightning-tab>
+
+                        <!-- NOTES TAB -->
+                        <lightning-tab
+                            label="Notes"
+                            value="notes"
+                            icon-name="standard:note">
+                            <template if:true={detailRecord.notes.length}>
+                                <template
+                                    for:each={detailRecord.notes}
+                                    for:item="note">
+                                    <div key={note.noteId} class="noteCard">
+                                        <p class="noteTitle">{note.title}</p>
+                                        <p class="noteBody">{note.body}</p>
+                                        <p class="noteMeta">
+                                            By {note.createdByName}
+                                            on {note.createdDate}
+                                        </p>
+                                    </div>
+                                </template>
+                            </template>
+                            <template if:false={detailRecord.notes.length}>
+                                <p class="emptyTab">No notes found.</p>
+                            </template>
+                        </lightning-tab>
+
+                    </lightning-tabset>
+
+                </template>
+
+            </div>
+
+        </div>
+
+    </lightning-card>
+</template>
